@@ -1,2 +1,4 @@
 # RoomController
-react native application for Philips hue smart light control
+React Native Application for Philips hue smart light control.
+
+# work in progress
