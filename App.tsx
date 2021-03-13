@@ -5,28 +5,27 @@ import TextField from "./components/TextInput";
 import { getGroups, getScenes } from "./control/index";
 import { Theme } from "./theme";
 import { ThemeProvider } from "styled-components/native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import ConnectionScreen from "./screens/connection";
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <>
       <ThemeProvider theme={Theme}>
-        <View style={styles.container}>
-          <TextField />
-          <Button
-            title="test11"
-            onPress={async () => {
-              const zones = await getScenes();
-              zones.forEach((item) => console.log(item.colorString));
-            }}
-          />
-          <StatusBar style="auto" />
-        </View>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Connection">
+            <Stack.Screen name="Connection" component={ConnectionScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
       </ThemeProvider>
     </>
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Theme.backgroundColor,
