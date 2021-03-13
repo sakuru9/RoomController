@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { TextInput } from "react-native";
+import { TextInput, NativeSyntheticEvent, TextInputChangeEventData } from "react-native";
 import styled, { withTheme } from "styled-components/native";
 
 const StyledTextInput = styled.TextInput`
@@ -14,9 +14,14 @@ const StyledTextInput = styled.TextInput`
   border-bottom-width: 2px;
 `;
 
-const TextField = () => {
+interface TextFieldProps {
+  onChange: (e: string) => void;
+}
+
+const TextField = (props: TextFieldProps) => {
   return (
     <StyledTextInput
+      onChangeText={props.onChange}
       placeholder="Enter your Bridge IP"
       placeholderTextColor="gray"
       keyboardType="default"
