@@ -2,8 +2,11 @@ import React from "react";
 import styled from "styled-components/native";
 import { Text } from "react-native";
 
-type StatusMessageType = "NORMAL" | "ERROR" | "SUCCESS";
-
+export enum StatusMessageType {
+  NORMAL = "NORMAL",
+  ERROR = "ERROR",
+  SUCCESS = "SUCCESS",
+}
 interface StatusTextProps {
   msg?: string;
   type: StatusMessageType;
