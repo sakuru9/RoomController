@@ -24,12 +24,3 @@ export default function App() {
     </>
   );
 }
-
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Theme.backgroundColor,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
