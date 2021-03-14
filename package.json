@@ -13,6 +13,7 @@
     "@react-navigation/stack": "^5.14.3",
     "@types/styled-components-react-native": "^5.1.1",
     "expo": "~40.0.0",
+    "expo-secure-store": "~9.3.0",
     "expo-status-bar": "~1.0.3",
     "fp-ts": "^2.9.5",
     "react": "16.13.1",
