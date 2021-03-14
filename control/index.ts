@@ -14,6 +14,17 @@ type SceneResponse = string | HueScene[] | HueScene;
 
 const baseUrl = () => `http://${HUE_BRIDGE_IP}/api/${HUE_AUTHORIZED_USER}`;
 
+export const testBridgeConnection = async (ipAddr: string): Promise<E.Either<false, true>> => {
+  try {
+    const req = await fetch(`http://${ipAddr}/api/${HUE_AUTHORIZED_USER}`);
+    if (req.status === 200) {
+      return E.right(true);
+    } else return E.left(false);
+  } catch (e) {
+    return E.left(false);
+  }
+};
+
 export const fetchHueApi = async <T>(
   resourceUrl: string,
   id?: string
