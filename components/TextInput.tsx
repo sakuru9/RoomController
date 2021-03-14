@@ -25,6 +25,7 @@ const TextField = (props: TextFieldProps) => {
       placeholder="Enter your Bridge IP"
       placeholderTextColor="gray"
       keyboardType="default"
+      autoFocus={false}
     />
   );
 };
