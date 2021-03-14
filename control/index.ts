@@ -7,9 +7,6 @@ import * as E from "fp-ts/lib/Either";
 import { TaskEither } from "fp-ts/lib/TaskEither";
 import * as SecureStore from "expo-secure-store";
 
-const HUE_BRIDGE_IP = "192.168.0.100";
-const HUE_AUTHORIZED_USER = "";
-
 type ZoneResponse = string | HueGroup[];
 type SceneResponse = string | HueScene[] | HueScene;
 
