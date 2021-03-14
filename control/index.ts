@@ -5,6 +5,7 @@ import { HueScene, SceneLightState } from "./types/scenes";
 import { absurd, pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/lib/Either";
 import { TaskEither } from "fp-ts/lib/TaskEither";
+import * as SecureStore from "expo-secure-store";
 
 const HUE_BRIDGE_IP = "192.168.0.100";
 const HUE_AUTHORIZED_USER = "";
@@ -12,18 +13,51 @@ const HUE_AUTHORIZED_USER = "";
 type ZoneResponse = string | HueGroup[];
 type SceneResponse = string | HueScene[] | HueScene;
 
-const baseUrl = () => `http://${HUE_BRIDGE_IP}/api/${HUE_AUTHORIZED_USER}`;
+export const createBridgeUser = async () => {
+  const bridgeUrl = await SecureStore.getItemAsync("hue_bridge_ip");
+
+  if (bridgeUrl) {
+    try {
+      const postReq = await fetch(`http://${bridgeUrl}/api`, {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ devicetype: "postman" }),
+      });
+
+      if (postReq.status === 200) {
+        const resp = await postReq.json();
+
+        if (resp[0].error) {
+          if (resp[0].error.type === 101)
+            return { error: true, msg: "Bridge link button needs to be pressed beforehand" };
+          return { error: true, msg: "Error creating user" };
+        }
+
+        await SecureStore.setItemAsync("hue_bridge_user", resp[0].success.username);
+        const user = await SecureStore.getItemAsync("hue_bridge_user");
+        return { msg: "User created!" };
+      } else {
+        return { error: true, msg: "Error creating user" };
+      }
+    } catch (e) {
+      return { error: true, msg: "Error creating user" };
+    }
+  } else {
+    return { error: true, msg: "Bridge connection needs to be set first" };
+  }
+};
 
 export const testBridgeConnection = async (ipAddr: string): Promise<E.Either<false, true>> => {
   try {
     const timeoutController = new AbortController();
     const timeoutId = setTimeout(() => timeoutController.abort(), 5000);
 
-    const req = await fetch(`http://${ipAddr}/api/${HUE_AUTHORIZED_USER}`, {
+    const req = await fetch(`http://${ipAddr}/api/`, {
       signal: timeoutController.signal,
     });
     if (req.status === 200) {
       clearTimeout(timeoutId);
+      await SecureStore.setItemAsync("hue_bridge_ip", ipAddr);
       return E.right(true);
     } else return E.left(false);
   } catch (e) {
@@ -36,7 +70,11 @@ export const fetchHueApi = async <T>(
   id?: string
 ): Promise<E.Either<Error, T>> => {
   try {
-    const response = await fetch(`${baseUrl()}${resourceUrl}/${id ? id : ""}`);
+    const bridgeUrl = await SecureStore.getItemAsync("hue_bridge_ip");
+    const hueUser = await SecureStore.getItemAsync("hue_bridge_user");
+    const response = await fetch(
+      `http://${bridgeUrl}/api/${hueUser}/${resourceUrl}/${id ? id : ""}`
+    );
     if (response.status !== 200) E.left("Error");
 
     return E.right(await response.json());

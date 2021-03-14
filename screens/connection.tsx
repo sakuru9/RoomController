@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Button, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { testBridgeConnection } from "../control/index";
+import { createBridgeUser, testBridgeConnection } from "../control/index";
 import { HueScene } from "../control/types/scenes";
 import { styles } from "../styles";
 import TextField from "../components/TextInput";
@@ -9,15 +9,16 @@ import { withTheme } from "styled-components";
 import { validateIpAddress } from "../utils";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/lib/Either";
-import StatusText from "../components/StatusText";
+import StatusText, { StatusMessageType } from "../components/StatusText";
 
 type IpValidateResult = false | string;
 
 const ConnectionScreen = () => {
   const [connStatus, setConnStatus] = useState(false);
-  const [statusMsg, setStatusMsg] = useState("");
+  const [status, setStatus] = useState({ msg: "", type: "NORMAL" as StatusMessageType });
   const [ip, setIp] = useState("");
   const [connected, setConnected] = useState(false);
+  const [errorMsg, setError] = useState(false);
 
   const validateIpString = (ip: string) => {
     return pipe(
@@ -32,7 +33,7 @@ const ConnectionScreen = () => {
   };
 
   const checkConnection = async (ipaddr: string) => {
-    setStatusMsg("Checking connection..");
+    setStatus({ msg: "Check connection..", type: StatusMessageType.NORMAL });
     setConnected(false);
 
     const ipCheck = validateIpString(ipaddr);
@@ -43,29 +44,42 @@ const ConnectionScreen = () => {
         E.map((res) => res as IpValidateResult),
         E.fold(
           (e) => {
-            setStatusMsg("Connection failed");
+            setStatus({ msg: "Connection failed", type: StatusMessageType.ERROR });
             setConnected(false);
             return false;
           },
           (r) => {
-            setStatusMsg("Connected successfully!");
+            setStatus({ msg: "Connected Successfully!", type: StatusMessageType.SUCCESS });
             setConnected(true);
             return true;
           }
         )
       );
     } else {
-      setStatusMsg("Invalid IP address");
+      setStatus({ msg: "Invalid IP address", type: StatusMessageType.ERROR });
+    }
+  };
+
+  const createUser = async () => {
+    if (connected) {
+      const create = await createBridgeUser();
+
+      if (!create.error) {
+        setStatus({ msg: create.msg, type: StatusMessageType.SUCCESS });
+      } else {
+        setStatus({ msg: create.msg, type: StatusMessageType.ERROR });
+      }
     }
   };
 
   return (
     <View style={styles.container}>
-      {statusMsg.length > 0 && (
-        <StatusText type={connected ? "SUCCESS" : "ERROR"} msg={statusMsg} />
-      )}
+      {status.msg.length > 0 && <StatusText type={status.type} msg={status.msg} />}
       <TextField onChange={(str) => setIp(str)} />
-      <Button title="Check connection" onPress={() => checkConnection(ip)} />
+      <View style={{ flexDirection: "row" }}>
+        <Button title="Check connection" onPress={() => checkConnection(ip)} />
+        <Button disabled={!connected} title="Create User" onPress={() => createUser()} />
+      </View>
       <StatusBar style="dark" />
     </View>
   );
