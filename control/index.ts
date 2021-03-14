@@ -16,8 +16,14 @@ const baseUrl = () => `http://${HUE_BRIDGE_IP}/api/${HUE_AUTHORIZED_USER}`;
 
 export const testBridgeConnection = async (ipAddr: string): Promise<E.Either<false, true>> => {
   try {
-    const req = await fetch(`http://${ipAddr}/api/${HUE_AUTHORIZED_USER}`);
+    const timeoutController = new AbortController();
+    const timeoutId = setTimeout(() => timeoutController.abort(), 5000);
+
+    const req = await fetch(`http://${ipAddr}/api/${HUE_AUTHORIZED_USER}`, {
+      signal: timeoutController.signal,
+    });
     if (req.status === 200) {
+      clearTimeout(timeoutId);
       return E.right(true);
     } else return E.left(false);
   } catch (e) {

@@ -32,10 +32,11 @@ const ConnectionScreen = () => {
   };
 
   const checkConnection = async (ipaddr: string) => {
-    setStatusMsg("");
+    setStatusMsg("Checking connection..");
     setConnected(false);
 
     const ipCheck = validateIpString(ipaddr);
+
     if (ipCheck) {
       const connCheck = pipe(
         await testBridgeConnection(ipCheck),
@@ -43,6 +44,7 @@ const ConnectionScreen = () => {
         E.fold(
           (e) => {
             setStatusMsg("Connection failed");
+            setConnected(false);
             return false;
           },
           (r) => {
