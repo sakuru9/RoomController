@@ -79,7 +79,7 @@ const ConnectionScreen = () => {
       <TextField onChange={(str) => setIp(str)} />
       <View style={{ flexDirection: "row" }}>
         <Button title="Check connection" onPress={() => checkConnection(ip)} />
-        <Button disabled={!connected} title="Create User" onPress={() => createUser()} />
+        <Button title="Create User" onPress={() => createUser()} />
       </View>
       <StatusBar style="dark" />
     </View>
