@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Button, Text } from "react-native";
+import { View, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { createBridgeUser, testBridgeConnection } from "../control/index";
 import { HueScene } from "../control/types/scenes";
@@ -10,6 +10,7 @@ import { validateIpAddress } from "../utils";
 import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/lib/Either";
 import StatusText, { StatusMessageType } from "../components/StatusText";
+import Button from "../components/Button";
 
 type IpValidateResult = false | string;
 
