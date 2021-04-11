@@ -8,6 +8,7 @@ import { ThemeProvider } from "styled-components/native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import ConnectionScreen from "./screens/connection";
+import MainScreen from "./screens/main";
 
 const Stack = createStackNavigator();
 
@@ -16,8 +17,9 @@ export default function App() {
     <>
       <ThemeProvider theme={Theme}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Connection">
+          <Stack.Navigator initialRouteName="Main">
             <Stack.Screen name="Connection" component={ConnectionScreen} />
+            <Stack.Screen name="Main" component={MainScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </ThemeProvider>

@@ -7,8 +7,8 @@ import * as E from "fp-ts/lib/Either";
 import { TaskEither } from "fp-ts/lib/TaskEither";
 import * as SecureStore from "expo-secure-store";
 
-type ZoneResponse = string | HueGroup[];
-type SceneResponse = string | HueScene[] | HueScene;
+export type ZoneResponse = string | HueGroup[];
+export type SceneResponse = string | HueScene[] | HueScene;
 
 export const createBridgeUser = async () => {
   const bridgeUrl = await SecureStore.getItemAsync("hue_bridge_ip");
@@ -69,6 +69,8 @@ export const fetchHueApi = async <T>(
   try {
     const bridgeUrl = await SecureStore.getItemAsync("hue_bridge_ip");
     const hueUser = await SecureStore.getItemAsync("hue_bridge_user");
+    console.log(bridgeUrl, hueUser);
+    console.log(`http://${bridgeUrl}/api/${hueUser}/${resourceUrl}/${id ? id : ""}`);
     const response = await fetch(
       `http://${bridgeUrl}/api/${hueUser}/${resourceUrl}/${id ? id : ""}`
     );
@@ -86,7 +88,7 @@ const formatResponse = <T>(data: { [key: string]: T }): T[] => {
   });
 };
 
-export const fetchGroups = async () => await fetchHueApi<{ [key: string]: HueGroup }>("/groups");
+export const fetchGroups = async () => await fetchHueApi<{ [key: string]: HueGroup }>("groups");
 
 export const getGroups = async () => {
   return pipe(
